@@ -16,6 +16,10 @@ class RegisterProgressView(APIView):
     Gera certificado automaticamente ao concluir todas as aulas.
     """
     permission_classes = [IsAuthenticated]
+    serializer_class = ProgressSerializer 
+
+    def get_serializer(self, *args, **kwargs):
+        return self.serializer_class(*args, **kwargs)
 
     def post(self, request, course_id, lesson_id):
         student = request.user
@@ -56,7 +60,7 @@ class RegisterProgressView(APIView):
         if updated_completed == total_lessons:
             generate_certificate.delay(student.id, course.id)
 
-        serializer = ProgressSerializer(progress)
+        serializer = self.get_serializer(progress)
         return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
 
@@ -66,10 +70,11 @@ class ProgressListView(APIView):
     Requer autenticação.
     """
     permission_classes = [IsAuthenticated]
+    serializer_class = ProgressSerializer
 
     def get(self, request, student_id):
         progress = Progress.objects.filter(student__id=student_id)
-        serializer = ProgressSerializer(progress, many=True)
+        serializer = self.serializer_class(progress, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -79,11 +84,12 @@ class CourseProgressView(APIView):
     Requer autenticação.
     """
     permission_classes = [IsAuthenticated]
+    serializer_class = ProgressSerializer
 
     def get(self, request, student_id, course_id):
         progress = Progress.objects.filter(
             student__id=student_id,
             course__id=course_id
         )
-        serializer = ProgressSerializer(progress, many=True)
+        serializer = self.serializer_class(progress, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

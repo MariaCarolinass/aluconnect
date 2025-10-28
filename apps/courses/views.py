@@ -1,11 +1,10 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.shortcuts import get_object_or_404
 from apps.courses.models import Course
 from apps.courses.serializers import CourseSerializer, CourseDetailSerializer
 from apps.courses.permissions import IsInstructor
-from rest_framework import viewsets
-from django.shortcuts import get_object_or_404
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -29,7 +28,8 @@ class CourseCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         course = serializer.save()
-        course.instructors.add(self.request.user) 
+        course.instructors.add(self.request.user)
+
 
 class CourseListView(generics.ListAPIView):
     """
@@ -67,12 +67,13 @@ class EnrollStudentView(generics.GenericAPIView):
     """
     Inscreve o usuário autenticado em um curso.
     """
+    serializer_class = CourseSerializer
     permission_classes = [IsAuthenticated]
 
     def post(self, request, id):
         course = get_object_or_404(Course, id=id)
         course.students.add(request.user)
-        return Response({"detail": "Registration successful."}, status=status.HTTP_200_OK)
+        return Response({"detail": "Inscrição realizada com sucesso."}, status=status.HTTP_200_OK)
 
 
 class StudentCoursesView(generics.ListAPIView):
