@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from config.views import indexView
+from config.views import IndexView
 from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import (
@@ -10,7 +10,7 @@ from drf_spectacular.views import (
 )
 
 urlpatterns = [
-    path('', indexView, name='index'),
+    path('', IndexView.as_view(), name='index'),
     path('admin/', admin.site.urls),
     path('', include('apps.users.urls')),
     path('', include('apps.instructors.urls')),
