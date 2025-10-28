@@ -29,5 +29,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
     
 
+class EmptySerializer(serializers.Serializer):
+    pass
+
+
 class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
