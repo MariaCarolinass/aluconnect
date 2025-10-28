@@ -2,6 +2,92 @@
 
 **AluConnect** é uma plataforma educacional desenvolvida com Django REST Framework, PostgreSQL e autenticação via JWT e OAuth2. Ela conecta alunos, instrutores e cursos em um ambiente seguro e escalável, com suporte a progresso de aprendizado, emissão de certificados e integração com login social.
 
+```
+AluConnect
+├── apps
+│   ├── certificates
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── constants.py
+│   │   ├── models.py
+│   │   ├── serializers.py
+│   │   ├── tasks.py
+│   │   ├── urls.py
+│   │   ├── views.py
+│   │   └── migrations/
+│   ├── courses
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py
+│   │   ├── permissions.py
+│   │   ├── serializers.py
+│   │   ├── urls.py
+│   │   ├── views.py
+│   │   └── tests/
+│   ├── instructors
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py
+│   │   ├── serializers.py
+│   │   ├── urls.py
+│   │   ├── views.py
+│   │   └── tests/
+│   ├── lessons
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py
+│   │   ├── serializers.py
+│   │   ├── urls.py
+│   │   ├── views.py
+│   │   ├── services/
+│   │   └── tests/
+│   ├── progress
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── constants.py
+│   │   ├── models.py
+│   │   ├── serializers.py
+│   │   ├── signals.py
+│   │   ├── urls.py
+│   │   ├── views.py
+│   │   ├── services/
+│   │   └── tests/
+│   ├── students
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py
+│   │   ├── serializers.py
+│   │   ├── urls.py
+│   │   ├── views.py
+│   │   └── tests/
+│   └── users
+│       ├── admin.py
+│       ├── apps.py
+│       ├── constants.py
+│       ├── models.py
+│       ├── serializers.py
+│       ├── urls.py
+│       ├── views.py
+│       └── tests/
+├── config
+│   ├── asgi.py
+│   ├── celery.py
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── utils.py
+│   ├── views.py
+│   └── wsgi.py
+├── staticfiles/
+├── manage.py
+├── requirements.txt
+├── pytest.ini
+├── docker-compose.yml
+├── Dockerfile
+├── LICENSE
+└── README.md
+```
+
 ---
 
 ## Funcionalidades
