@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from apps.users.serializers import EmptySerializer
 
 class RegisterView(generics.CreateAPIView):
     """
@@ -25,7 +25,8 @@ class LogoutView(APIView):
     Requer autenticação.
     """
     permission_classes = [IsAuthenticated]
-    
+    serializer_class = EmptySerializer
+
     def post(self, request):
         serializer = LogoutSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
