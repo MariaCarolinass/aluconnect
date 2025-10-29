@@ -25,6 +25,10 @@ class Instructor(models.Model):
         verbose_name_plural = 'Instrutores'
         ordering = ['user__username']
 
+    def deactivate(self):
+        self.is_active = False
+        self.save()
+
     def __str__(self):
-        return f"Instrutor: {self.user.get_full_name() or self.user.username}"
+        return f"Instrutor: {self.user.username}"
     
