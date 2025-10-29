@@ -24,4 +24,4 @@ class User(AbstractUser):
         ordering = ['email']
 
     def __str__(self):
-        return f"{self.get_full_name() or self.username} ({self.email})"
+        return f"{self.username} ({self.email})"
