@@ -3,18 +3,17 @@ from apps.certificates.models import Certificate
 
 
 class CertificateSerializer(serializers.ModelSerializer):
-    student_name = serializers.CharField(source='student.get_full_name', read_only=True)
-    course_title = serializers.CharField(source='course.title', read_only=True)
+    student = serializers.StringRelatedField(many=False, read_only=True)
+    course = serializers.StringRelatedField(many=False, read_only=True)
 
     class Meta:
         model = Certificate
         fields = [
             'id',
             'student',
-            'student_name',
             'course',
-            'course_title',
             'code',
             'issued_at'
         ]
         read_only_fields = ['issued_at']
+    
