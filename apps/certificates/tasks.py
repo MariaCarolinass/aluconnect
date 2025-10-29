@@ -1,33 +1,40 @@
-from apps.certificates.models import Certificate
+import openai
+from decouple import config
 from celery import shared_task
-import google.generativeai as genai
+from apps.certificates.models import Certificate
 from apps.users.models import User
 from apps.courses.models import Course
 from apps.certificates.constants import CERTIFICATE_CODE_LENGTH
 from config.utils import generate_unique_code
-from decouple import config
 
-genai.configure(api_key=config("GOOGLE_API_KEY"))
+openai.api_key = config("OPENAI_API_KEY")
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=10)
 def generate_certificate(self, student_id, course_id):
     """
     Task assíncrona que gera um certificado personalizado para um aluno que concluiu um curso.
-    Utiliza Gemini para gerar o texto e salva o certificado com um código único.
+    Utiliza OpenAI para gerar o texto e salva o certificado com um código único.
     """
-    
     try:
         student = User.objects.get(id=student_id)
         course = Course.objects.get(id=course_id)
 
         prompt = (
-            f"Crie um texto de certificado de conclusão para um aluno chamado {student.first_name} "
+            f"Crie um texto de certificado de conclusão para um aluno chamado {student.username} "
             f"que terminou o curso '{course.title}'. O texto deve ser inspirador e ideal para compartilhar nas redes sociais."
         )
 
-        model = genai.GenerativeModel("gemini-pro")
-        response = model.generate_content(prompt)
-        personalized_text = response.text.strip()
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Você é um assistente que cria certificados de conclusão."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=200,
+            temperature=0.7
+        )
+
+        personalized_text = response.choices[0].message["content"].strip()
 
         code = generate_unique_code(CERTIFICATE_CODE_LENGTH)
 
@@ -35,7 +42,7 @@ def generate_certificate(self, student_id, course_id):
             student=student,
             course=course,
             code=code,
-            text=personalized_text
+            defaults={"text": personalized_text}
         )
 
         return f"Certificado gerado para {student.email} no curso '{course.title}'."
