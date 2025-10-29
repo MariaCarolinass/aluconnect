@@ -28,13 +28,13 @@ class TestInstructorViews:
         assert Instructor.objects.filter(user=self.user).exists()
 
     def test_list_instructors(self):
-        instructor = User.objects.create_user(
+        instructor_user = User.objects.create_user(
             email="prof@example.com",
             username="prof",
             password="test123",
             role=UserRole.INSTRUCTOR
         )
-        Instructor.objects.create(user=instructor, bio="Especialista em IA")
+        Instructor.objects.create(user=instructor_user, bio="Especialista em IA")
         url = reverse('instructor-list')
         response = self.client.get(url)
         assert response.status_code == 200
