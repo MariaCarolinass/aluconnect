@@ -4,16 +4,16 @@ from apps.students.models import Student
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = (
-        'get_username',
-        'get_email',
+    list_display = ('user', 'bio', 'created_at', 'updated_at')
+    search_fields = ('user__username', 'user__email', 'bio')
+    readonly_fields = ('created_at', 'updated_at')
+    ordering = ('user',)
+
+    fieldsets = (
+        (None, {
+            'fields': ('user', 'bio')
+        }),
+        ('Datas', {
+            'fields': ('created_at', 'updated_at'),
+        }),
     )
-    ordering = ('user__username',)
-
-    def get_username(self, obj):
-        return obj.user.username
-    get_username.short_description = 'Username'
-
-    def get_email(self, obj):
-        return obj.user.email
-    get_email.short_description = 'Email'
