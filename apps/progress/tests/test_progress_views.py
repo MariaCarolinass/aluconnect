@@ -21,8 +21,8 @@ class TestProgressViews:
         )
         self.client.force_authenticate(user=self.student)
         self.course = Course.objects.create(title="Curso de Python")
-        self.lesson1 = Lesson.objects.create(course=self.course, title="Aula 1")
-        self.lesson2 = Lesson.objects.create(course=self.course, title="Aula 2")
+        self.lesson1 = Lesson.objects.create(course=self.course, title="Aula 1", order=1)
+        self.lesson2 = Lesson.objects.create(course=self.course, title="Aula 2", order=2)
 
     def test_register_progress_sets_status_completed(self):
         url = reverse('register-progress', args=[self.course.id, self.lesson1.id])
