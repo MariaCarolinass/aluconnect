@@ -41,4 +41,4 @@ class Progress(models.Model):
         ordering = ['-updated_at']
 
     def __str__(self):
-        return f"Student: {self.student.get_full_name() or self.student.username} - Lesson: {self.lesson.title} - Status: ({self.status})"
+        return f"Student: {self.student.username} - Lesson: {self.lesson.title} - Status: ({self.status})"
