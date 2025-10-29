@@ -1,20 +1,25 @@
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 from apps.progress.models import Progress
 from apps.progress.serializers import ProgressSerializer
 from apps.courses.models import Course
 from apps.lessons.models import Lesson
+from apps.users.constants import UserRole
+from rest_framework.exceptions import PermissionDenied
 from apps.certificates.tasks import generate_certificate
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema
 
 
-class RegisterProgressView(APIView):
-    """
-    Marca uma aula como concluída para o aluno autenticado.
-    Gera certificado automaticamente ao concluir todas as aulas.
-    """
+@extend_schema(
+    summary="Registro de Progresso",
+    description="Marca uma aula como concluída para o aluno autenticado.",
+    request=ProgressSerializer,
+    responses={200: ProgressSerializer()},
+    tags=["progress"],
+)
+class RegisterProgressView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ProgressSerializer 
 
@@ -64,32 +69,36 @@ class RegisterProgressView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
 
-class ProgressListView(APIView):
-    """
-    Lista o progresso geral de um aluno.
-    Requer autenticação.
-    """
+@extend_schema(
+    summary="Progresso do Aluno",
+    description="Lista o progresso geral de um aluno.",
+    responses={200: ProgressSerializer(many=True)},
+    tags=["progress"],
+)
+class ProgressListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ProgressSerializer
 
-    def get(self, request, student_id):
-        progress = Progress.objects.filter(student__id=student_id)
-        serializer = self.serializer_class(progress, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        user = self.request.user
+        if user.role != UserRole.STUDENT:
+            raise PermissionDenied("Apenas estudantes podem ver seu progresso.")
+        return Progress.objects.filter(student=user)
 
 
-class CourseProgressView(APIView):
-    """
-    Lista o progresso de um aluno em um curso específico.
-    Requer autenticação.
-    """
+@extend_schema(
+    summary="Progresso do Aluno em Curso",
+    description="Lista o progresso de um aluno em um curso específico.",
+    responses={200: ProgressSerializer(many=True)},
+    tags=["progress"],
+)
+class CourseProgressView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ProgressSerializer
 
-    def get(self, request, student_id, course_id):
-        progress = Progress.objects.filter(
-            student__id=student_id,
-            course__id=course_id
-        )
-        serializer = self.serializer_class(progress, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        user = self.request.user
+        if user.role != UserRole.STUDENT:
+            raise PermissionDenied("Apenas estudantes podem ver seu progresso.")
+        course_id = self.kwargs.get('course_id')
+        return Progress.objects.filter(student=user, course_id=course_id)
