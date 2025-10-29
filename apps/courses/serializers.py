@@ -1,24 +1,24 @@
 from rest_framework import serializers
 from apps.courses.models import Course
-from apps.users.models import User
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    instructors = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.filter(role='INSTRUCTOR'),
-        many=True,
-        required=False
-    )
-
+    instructors = serializers.StringRelatedField(many=True, read_only=True)
+    
     class Meta:
         model = Course
         fields = ['id', 'title', 'description', 'instructors', 'created_at', 'updated_at']
-        read_only_fields = ['created_at', 'updated_at']
-    
+        read_only_fields = ['instructors', 'created_at', 'updated_at']
+
+    def validate_title(self, value):
+        if Course.objects.filter(title__iexact=value).exists():
+            raise serializers.ValidationError(f"O curso '{value}' já existe.")
+        return value
+
     def validate_instructors(self, value):
-        for user in value:
-            if user.role != 'INSTRUCTOR':
-                raise serializers.ValidationError(f"{user.get_full_name()} não é um instrutor.")
+        for instructor in value:
+            if not instructor.is_active:
+                raise serializers.ValidationError(f"{instructor.user.username} está inativo.")
         return value
 
 
