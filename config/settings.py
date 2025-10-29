@@ -24,7 +24,7 @@ CELERY_BROKER_URL = config('CELERY_BROKER_URL')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
-GOOGLE_API_KEY = config('GOOGLE_API_KEY')
+OPENAI_API_KEY = config('OPENAI_API_KEY')
 
 INSTALLED_APPS = [
     'social_django',
@@ -136,6 +136,7 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Documentação interativa da API da plataforma AluConnect.',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
 }
 
 LANGUAGE_CODE = 'pt-br'
