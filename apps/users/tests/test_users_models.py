@@ -2,7 +2,6 @@ import pytest
 from apps.users.models import User
 from apps.users.constants import UserRole
 
-
 @pytest.mark.django_db
 class TestUserModel:
 
