@@ -14,10 +14,7 @@ class TestStudentModel:
             password="test123",
             role=UserRole.STUDENT
         )
-        student = Student.objects.create(
-            user=user,
-            is_active=True
-        )
+        student = Student.objects.create(user=user, is_active=True)
         assert student.user.email == "carol@example.com"
         assert student.is_active is True
         assert str(student) == "Estudante: carol"

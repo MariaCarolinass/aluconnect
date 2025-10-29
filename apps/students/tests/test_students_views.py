@@ -27,13 +27,13 @@ class TestStudentViews:
         assert any(s["email"] == "carol@example.com" for s in response.data)
 
     def test_detail_student(self):
-        url = reverse('student-detail', args=[self.user.id])
+        url = reverse('student-detail', args=[self.student.id])
         response = self.client.get(url)
         assert response.status_code == 200
         assert response.data["email"] == "carol@example.com"
 
     def test_update_student(self):
-        url = reverse('student-update', args=[self.user.id])
+        url = reverse('student-update', args=[self.student.id])
         data = {"bio": "Nova bio atualizada", "is_active": False}
         response = self.client.put(url, data, content_type='application/json')
         assert response.status_code == 200
