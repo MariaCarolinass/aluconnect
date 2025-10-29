@@ -13,8 +13,7 @@ AluConnect
 │   │   ├── serializers.py
 │   │   ├── tasks.py
 │   │   ├── urls.py
-│   │   ├── views.py
-│   │   └── migrations/
+│   │   └── views.py
 │   ├── courses
 │   │   ├── admin.py
 │   │   ├── apps.py
