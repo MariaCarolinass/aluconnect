@@ -146,6 +146,8 @@ DB_PASSWORD=1234
 DB_HOST=db
 DB_PORT=5432
 
+OPENAI_API_KEY=your-openai-api-key
+
 CELERY_BROKER_URL=redis://redis:6379/0
 ```
 
@@ -161,7 +163,7 @@ docker-compose up --build
 http://localhost:8000/
 ```
 
-## Como aplicar migrações (local ou Docker)
+## Como aplicar migrações
 
 ### Rodando o projeto dentro do Docker
 
@@ -201,7 +203,13 @@ python manage.py migrate
 
 ## Como rodar os testes
 
-### 1. Execute os testes com Pytest
+### Rodando testes com Docker
+
+```bash
+docker-compose run web pytest
+```
+
+### Rodando testes localmente (fora do Docker)
 
 1. Crie o ambiente virtual (se ainda não tiver)
 
@@ -243,7 +251,7 @@ pytest --cov=apps
 ## Principais decisões de design
 
 - JWT com refresh token e blacklist para segurança e escalabilidade
-- Separação por apps (users, courses, students, etc.) para modularidade
+- Separação por apps (users, courses, students, progress, lessons, instructors, certificates) para modularidade
 - Docker Compose com serviços isolados (web, db, redis, celery) para facilitar deploy e desenvolvimento
 - Customização de erros e respostas para melhorar a experiência da API
 - Uso de Celery para tarefas como envio de certificados ou notificações
