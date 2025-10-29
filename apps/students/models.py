@@ -1,5 +1,7 @@
 from django.db import models
 from apps.users.models import User
+from django.utils import timezone
+from datetime import timedelta
 
 
 class Student(models.Model):
@@ -19,5 +21,20 @@ class Student(models.Model):
         verbose_name_plural = 'Estudantes'
         ordering = ['user__username']
 
+    def is_blocked(self):
+        """
+        Retorna True se o aluno estiver bloqueado temporariamente
+        """
+        if self.blocked_until and self.blocked_until > timezone.now():
+            return True
+        return False
+
+    def block_for(self, hours=24):
+        """
+        Bloqueia o aluno temporariamente
+        """
+        self.blocked_until = timezone.now() + timedelta(hours=hours)
+        self.save()
+
     def __str__(self):
-        return f"Estudante: {self.user.get_full_name() or self.user.username}"
+        return f"Estudante: {self.user.username}"
