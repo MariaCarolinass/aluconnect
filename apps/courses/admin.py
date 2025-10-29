@@ -4,9 +4,9 @@ from apps.courses.models import Course
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('title', 'get_instructors', 'created_at', 'updated_at')
+    list_display = ('title', 'description', 'get_instructors', 'created_at', 'updated_at')
     list_filter = ('instructors',)
-    search_fields = ('title', 'instructors__first_name', 'instructors__last_name')
+    search_fields = ('title', 'instructors__username', 'instructors__email')
     ordering = ('title',)
     readonly_fields = ('created_at', 'updated_at')
     filter_horizontal = ('instructors', 'students')
