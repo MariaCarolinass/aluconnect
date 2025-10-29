@@ -1,10 +1,10 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django.core.exceptions import PermissionDenied
 from apps.users.constants import UserRole
 from apps.instructors.models import Instructor
 from apps.instructors.serializers import InstructorSerializer
-from rest_framework import status
 
 
 class InstructorListView(generics.ListAPIView):
@@ -35,18 +35,42 @@ class InstructorCreateView(generics.CreateAPIView):
     """
     serializer_class = InstructorSerializer
     permission_classes = [IsAuthenticated]
+    
+    def perform_create(self, serializer):
+        user = self.request.user
 
-    def post(self, request):
-        user = request.user
-        if user.role != UserRole.INSTRUCTOR:
-            user.role = UserRole.INSTRUCTOR
-            user.save()
+        if user.role != UserRole.ADMIN:
+            raise PermissionDenied("Você não tem permissão para criar instrutores.")
 
-        profile, created = Instructor.objects.get_or_create(user=user)
-        serializer = self.get_serializer(profile)
-        status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        return Response(serializer.data, status=status_code)
+        self.instance = serializer.save()
 
+    def create(self, request, *args, **kwargs):
+        """
+        Sobrescreve o método 'create' apenas para personalizar a resposta JSON.
+        """
+        response = super().create(request, *args, **kwargs)
+        user = getattr(self, 'instance', None)
+
+        return Response(
+            {
+                "success": True,
+                "message": f"Usuário '{user.role}' criado com sucesso!",
+                "data": response.data,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+    def handle_exception(self, exc):
+        if isinstance(exc, PermissionDenied):
+            return Response(
+                {
+                    "success": False,
+                    "error": str(exc),
+                    "detail": "Você não tem permissão para realizar essa ação."
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        return super().handle_exception(exc)
 
 class InstructorUpdateView(generics.UpdateAPIView):
     """
