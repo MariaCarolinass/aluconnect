@@ -184,7 +184,7 @@ python manage.py migrate
 1. Ative o ambiente virtual
 
 ```bash
-source venv/bin/activate  # Linux/macOS
+source .venv/bin/activate  # Linux/macOS
 venv\Scripts\activate     # Windows
 ```
 
