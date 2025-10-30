@@ -77,8 +77,10 @@ AluConnect
 │   ├── utils.py
 │   ├── views.py
 │   └── wsgi.py
+├── data
 ├── staticfiles/
 ├── manage.py
+├── rundata.py
 ├── requirements.txt
 ├── pytest.ini
 ├── docker-compose.yml
@@ -118,14 +120,14 @@ AluConnect
 
 ## Como executar o projeto
 
-### 1. Clone o repositório
+### Clone o repositório
 
 ```bash
 git clone https://github.com/mariacarolinass/aluconnect.git
 cd aluconnect
 ```
 
-### 2. Crie o arquivo .env
+### Crie o arquivo .env
 
 ```bash
 SECRET_KEY=your-secret-key
@@ -150,36 +152,44 @@ OPENAI_API_KEY=your-openai-api-key
 CELERY_BROKER_URL=redis://redis:6379/0
 ```
 
-### 3. Execute com Docker
+Caso queira utilizar SQLite ao invés de PostgreSQL, comente as variáveis relacionadas ao banco de dados PostgreSQL e adicione as linhas abaixo:
+
+```bash
+DB_ENGINE=django.db.backends.sqlite3
+DB_NAME=db.sqlite3
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
+```
+
+O SQLite facilita a execução local sem a necessidade de configurar um banco de dados separado e é útil para testes rápidos ou desenvolvimento inicial sem o Docker.
+
+### Execute com Docker
 
 ```bash
 docker-compose up --build
 ```
 
-### 4. Acesse no navegador
+Caso seja necessário suba as migrações para funcionar:
+
+```bash
+docker-compose run --rm web python manage.py migrate
+```
+
+Em caso de conflitos de migrações utilize:
+
+```bash
+python manage.py makemigrations --merge
+```
+
+#### Acesse no navegador
 
 ```bash
 http://localhost:8000/
 ```
 
-## Como aplicar migrações
-
-### Rodando o projeto dentro do Docker
-
-1. Acesse o container web
-
-```bash
-docker exec -it aluconnect_web bash
-```
-
-2. Execute as migrações
-
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
-
-### Rodando o projeto localmente (fora do Docker)
+### Execute localmente (fora do Docker)
 
 1. Ative o ambiente virtual
 
@@ -188,87 +198,35 @@ source .venv/bin/activate  # Linux/macOS
 venv\Scripts\activate     # Windows
 ```
 
-2. Crie as migrações
-
-```bash
-python manage.py makemigrations
-```
-
-3. Aplique as migrações
-
-```bash
-python manage.py migrate
-```
-
-## Como rodar os testes
-
-### Rodando testes com Docker
-
-```bash
-docker-compose run web pytest
-```
-
-### Rodando testes localmente (fora do Docker)
-
-1. Crie o ambiente virtual (se ainda não tiver)
-
-```bash
-python -m venv venv
-```
-
-2. Ative o ambiente virtual
-
-```bash
-source .venv/bin/activate  # Linux/macOS
-venv\Scripts\activate     # Windows
-```
-
-3. Instale as dependências
+2. Instale as dependências
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Depois, você pode rodar todos os testes com:
+3. Crie as migrações
 
 ```bash
-pytest
+python manage.py makemigrations
 ```
 
-Ou rodar testes específicos:
+4. Aplique as migrações
 
 ```bash
-pytest apps/users/tests/test_auth.py
+python manage.py migrate
 ```
 
-Para visualizar a cobertura de código:
+5. Rode a aplicação
 
 ```bash
-pytest --cov=apps
+python manage.py runserver
 ```
 
-## Principais decisões de design
+#### Acesse no navegador
 
-- JWT com refresh token e blacklist para segurança e escalabilidade
-- Separação por apps (users, courses, students, progress, lessons, instructors, certificates) para modularidade
-- Docker Compose com serviços isolados (web, db, redis, celery) para facilitar deploy e desenvolvimento
-- Customização de erros e respostas para melhorar a experiência da API
-- Uso de Celery para tarefas como envio de certificados ou notificações
-- Autenticação social com Google para facilitar onboarding
-
-### LLM
-
-- Uso de modelo de linguagem (LLM) para gerar certificados com texto personalizado, evitando templates fixos e permitindo variações criativas e formais
-- O certificado é gerado com base no progresso do aluno, validando se todas as aulas foram concluídas antes da emissão
-- A geração pode ser integrada com Celery para envio assíncrono por e-mail ou armazenamento em PDF
-
-## Requisitos para produção
-
-- Configurar variáveis de ambiente seguras
-- Usar banco PostgreSQL gerenciado
-- Configurar HTTPS e domínio
-- Usar serviços como Sentry para monitoramento
-- Configurar workers Celery em background
+```bash
+http://127.0.0.1:8000/
+```
 
 ## Documentação da API com Swagger
 
@@ -295,3 +253,61 @@ Bearer <seu_access_token>
 ```
 
 3. Os endpoints protegidos estarão liberados para teste
+
+## Importando dados para o banco
+
+O arquivo `rundata.py` importa os dados em csv do diretório `data` para o banco de dados.
+
+### Importe para o banco no Docker
+
+```bash
+docker-compose run --rm web python rundata.py
+```
+
+### Importe para o banco local
+
+```bash
+python rundata.py
+```
+
+## Como rodar os testes
+
+### Rodando testes com Docker
+
+```bash
+docker-compose run web pytest
+```
+
+### Rodando testes localmente (fora do Docker)
+
+Rode todos os testes com:
+
+```bash
+pytest
+```
+
+Ou rodar testes específicos:
+
+```bash
+pytest apps/users/tests/test_auth.py
+```
+
+Para visualizar a cobertura de código:
+
+```bash
+pytest --cov=apps
+```
+
+## Principais decisões de design
+
+- JWT com refresh token e blacklist para segurança e escalabilidade
+- Separação por apps (users, courses, students, progress, lessons, instructors, certificates) para modularidade
+- Docker Compose com serviços isolados (web, db, redis, celery) para facilitar deploy e desenvolvimento
+- Customização de erros e respostas para melhorar a experiência da API
+- Uso de Celery para tarefas como envio de certificados
+- Autenticação social com Google para facilitar onboarding
+
+### LLM
+
+- Uso de modelo de linguagem (LLM) para gerar certificados com texto personalizado, evitando templates fixos e permitindo variações criativas e formais
+- O certificado é gerado com base no progresso do aluno, validando se todas as aulas foram concluídas antes da emissão
