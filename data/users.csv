@@ -1,0 +1,5 @@
+id,username,email,role,password
+1,carol,carol@example.com,STUDENT,password1
+2,jose,jose@example.com,INSTRUCTOR,password2
+3,maria,maria@example.com,STUDENT,password3
+4,admin,admin@example.com,ADMIN,password4

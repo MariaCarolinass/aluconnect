@@ -1,0 +1,4 @@
+id,course_id,title,content,order,duration,video_url
+1,1,Getting Started with Python,Learn the basics of Python programming.,1,00:45:00,https://example.com/python-intro
+2,1,Data Structures in Python,"Understand lists, dictionaries, and more.",2,00:45:00,https://example.com/python-data
+3,2,Introduction to Machine Learning,Get to know the key ML concepts.,1,00:30:00,https://example.com/ml-intro
