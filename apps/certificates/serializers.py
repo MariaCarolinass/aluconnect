@@ -13,6 +13,7 @@ class CertificateSerializer(serializers.ModelSerializer):
             'student',
             'course',
             'code',
+            'text',
             'issued_at'
         ]
         read_only_fields = ['issued_at']
