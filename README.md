@@ -191,32 +191,38 @@ http://localhost:8000/
 
 ### Execute localmente (fora do Docker)
 
-1. Ative o ambiente virtual
+1. Crie o ambiente virtual venv:
 
 ```bash
-source .venv/bin/activate  # Linux/macOS
+python3 -m venv venv
+```
+
+2. Ative o ambiente virtual
+
+```bash
+source venv/bin/activate  # Linux/macOS
 venv\Scripts\activate     # Windows
 ```
 
-2. Instale as dependências
+3. Instale as dependências
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Crie as migrações
+4. Crie as migrações
 
 ```bash
 python manage.py makemigrations
 ```
 
-4. Aplique as migrações
+5. Aplique as migrações
 
 ```bash
 python manage.py migrate
 ```
 
-5. Rode a aplicação
+6. Rode a aplicação
 
 ```bash
 python manage.py runserver
