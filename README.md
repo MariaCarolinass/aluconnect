@@ -1,6 +1,6 @@
 # AluConnect
 
-**AluConnect** é uma plataforma educacional desenvolvida com Django REST Framework, PostgreSQL e autenticação via JWT e OAuth2. Ela conecta alunos, instrutores e cursos em um ambiente seguro e escalável, com suporte a progresso de aprendizado, emissão de certificados e integração com login social.
+AluConnect é uma plataforma educacional desenvolvida com Django REST Framework, PostgreSQL e autenticação via JWT e OAuth2. Ela conecta alunos, instrutores e cursos em um ambiente seguro e escalável, com suporte a progresso de aprendizado, emissão de certificados e integração com login social.
 
 ```
 AluConnect
@@ -147,7 +147,7 @@ DB_PASSWORD=1234
 DB_HOST=db
 DB_PORT=5432
 
-OPENAI_API_KEY=your-openai-api-key
+OPENROUTER_API_KEY=your-openrouter-api-key
 
 CELERY_BROKER_URL=redis://redis:6379/0
 ```
@@ -165,22 +165,34 @@ DB_PORT=
 
 O SQLite facilita a execução local sem a necessidade de configurar um banco de dados separado e é útil para testes rápidos ou desenvolvimento inicial sem o Docker.
 
-### Execute com Docker
+### Execução e Importação de Dados com o Docker
 
-```bash
-docker-compose up --build
-```
+1. Aplicar migrações
 
-Suba as migrações:
+Certifique-se de que o banco de dados está atualizado antes de subir os containers:
 
 ```bash
 docker-compose run --rm web python manage.py migrate
 ```
 
-Em caso de conflitos de migrações utilize:
+2. Subir os containers
+
+Construa e inicie os containers da aplicação:
 
 ```bash
-python manage.py makemigrations --merge
+docker-compose up --build
+```
+
+#### Importando dados para o banco
+
+O arquivo `rundata.py` importa os dados em csv do diretório `data` para o banco de dados.
+
+3. Importar dados
+
+Execute o script dentro do container:
+
+```bash
+docker-compose run --rm web python rundata.py
 ```
 
 #### Acesse no navegador
@@ -234,6 +246,12 @@ python manage.py runserver
 http://127.0.0.1:8000/
 ```
 
+#### Importar dados localmente
+
+```bash
+python rundata.py
+```
+
 ## Documentação da API com Swagger
 
 A API do AluConnect é documentada automaticamente com o pacote drf-spectacular, permitindo que qualquer pessoa visualize e teste os endpoints diretamente no navegador.
@@ -259,22 +277,6 @@ Bearer <seu_access_token>
 ```
 
 3. Os endpoints protegidos estarão liberados para teste
-
-## Importando dados para o banco
-
-O arquivo `rundata.py` importa os dados em csv do diretório `data` para o banco de dados.
-
-### Importe para o banco no Docker
-
-```bash
-docker-compose run --rm web python rundata.py
-```
-
-### Importe para o banco local
-
-```bash
-python rundata.py
-```
 
 ## Como rodar os testes
 
@@ -313,7 +315,50 @@ pytest --cov=apps
 - Uso de Celery para tarefas como envio de certificados
 - Autenticação social com Google para facilitar onboarding
 
-### LLM
+### LLM - Geração Inteligente de Certificados
 
-- Uso de modelo de linguagem (LLM) para gerar certificados com texto personalizado, evitando templates fixos e permitindo variações criativas e formais
-- O certificado é gerado com base no progresso do aluno, validando se todas as aulas foram concluídas antes da emissão
+- Implementação de modelos de linguagem (LLM) para gerar certificados personalizados, substituindo textos fixos por mensagens criativas, inspiradoras e contextuais.  
+- O sistema utiliza a API do [OpenRouter](https://openrouter.ai) integrada via SDK oficial da OpenAI, com o modelo `mistralai/mistral-7b-instruct`, permitindo variação natural e linguagem formal nos certificados.  
+- A geração é executada de forma assíncrona por meio do Celery, com o Redis atuando como *message broker*, garantindo:
+  - Execução paralela e segura das tarefas;  
+  - Retries automáticos em caso de falha temporária;  
+  - Idempotência, evitando a criação duplicada de certificados.  
+- Antes da emissão, o sistema valida o progresso do aluno, garantindo que o certificado só seja gerado após a conclusão de todas as aulas do curso.  
+- O texto gerado é salvo no banco de dados junto ao código único do certificado, preservando a rastreabilidade e autenticidade do documento.
+
+#### Arquitetura da Geração de Certificados com LLM
+
+```text
+┌──────────────────────────┐
+│        Usuário           │
+│  (Aluno conclui curso)   │
+└────────────┬─────────────┘
+             │
+             ▼
+┌──────────────────────────┐
+│     Django Backend       │
+│ Valida conclusão e envia │
+│   task ao Celery Worker  │
+└────────────┬─────────────┘
+             │
+             ▼
+┌──────────────────────────┐
+│     Celery + Redis       │
+│ Executa task assíncrona  │
+│ Requisição ao OpenRouter │
+└────────────┬─────────────┘
+             │
+             ▼
+┌──────────────────────────┐
+│     OpenRouter API       │
+│ Modelo: mistralai/mistral│
+│ Gera texto do certificado│
+└────────────┬─────────────┘
+             │
+             ▼
+┌──────────────────────────┐
+│     Banco de Dados       │
+│ Salva certificado com    │
+│ texto + código único     │
+└──────────────────────────┘
+```
