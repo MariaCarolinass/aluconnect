@@ -15,7 +15,8 @@ class Student(models.Model):
     is_active = models.BooleanField(default=True, verbose_name='Ativo')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Atualizado em')
-
+    blocked_until = models.DateTimeField(null=True, blank=True, verbose_name='Bloqueado até')
+    
     class Meta:
         verbose_name = 'Estudante'
         verbose_name_plural = 'Estudantes'
