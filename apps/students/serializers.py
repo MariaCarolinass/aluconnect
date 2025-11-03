@@ -15,6 +15,7 @@ class StudentSerializer(serializers.ModelSerializer):
             'bio',
             'is_active',
             'created_at',
-            'updated_at'
+            'updated_at',
+            'blocked_until',
         ]
         read_only_fields = ['created_at', 'updated_at']
