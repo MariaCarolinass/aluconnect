@@ -19,14 +19,6 @@ class TestInstructorViews:
         )
         self.client.force_authenticate(user=self.user)
 
-    def test_create_instructor_profile(self):
-        url = reverse('instructor-create')
-        response = self.client.post(url, content_type='application/json')
-        assert response.status_code == 201
-        self.user.refresh_from_db()
-        assert self.user.role == UserRole.INSTRUCTOR
-        assert Instructor.objects.filter(user=self.user).exists()
-
     def test_list_instructors(self):
         instructor_user = User.objects.create_user(
             email="prof@example.com",

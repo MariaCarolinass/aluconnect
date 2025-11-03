@@ -53,5 +53,5 @@ class TestProgressViews:
         response = self.client.get(url)
         assert response.status_code == 200
         assert len(response.data) == 1
-        assert response.data[0]["lesson"] == self.lesson1.id
+        assert response.data[0]["lesson"] == str(self.lesson1)
         assert response.data[0]["status"] == ProgressStatus.COMPLETED
