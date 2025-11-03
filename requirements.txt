@@ -3,7 +3,7 @@ aiohttp==3.13.2
 aiosignal==1.4.0
 amqp==5.3.1
 annotated-types==0.7.0
-anyio==4.11.0
+anyio==3.7.1
 asgiref==3.10.0
 async-timeout==5.0.1
 attrs==25.4.0
@@ -52,7 +52,7 @@ jsonschema-specifications==2025.9.1
 kombu==5.5.4
 multidict==6.7.0
 oauthlib==3.3.1
-openai==0.28.0
+openai==2.6.1
 packaging==25.0
 pluggy==1.6.0
 prompt_toolkit==3.0.52
