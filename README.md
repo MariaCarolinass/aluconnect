@@ -171,7 +171,7 @@ O SQLite facilita a execução local sem a necessidade de configurar um banco de
 docker-compose up --build
 ```
 
-Caso seja necessário suba as migrações para funcionar:
+Suba as migrações:
 
 ```bash
 docker-compose run --rm web python manage.py migrate
