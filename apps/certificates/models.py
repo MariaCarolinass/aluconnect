@@ -19,12 +19,15 @@ class Certificate(models.Model):
     )
     issued_at = models.DateTimeField(auto_now_add=True, verbose_name='Emitido em')
     code = models.CharField(max_length=20, unique=True, verbose_name='Código do certificado')
+    text = models.TextField(blank=True, verbose_name="Texto do certificado")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Atualizado em')
 
     class Meta:
         unique_together = ('student', 'course')
         verbose_name = 'Certificado'
         verbose_name_plural = 'Certificados'
-        ordering = ['-issued_at']
+        ordering = ['issued_at']
 
     def __str__(self):
-        return f"Certificado {self.code} - {self.student.get_full_name() or self.student.username} - {self.course.title}"
+        return f"Certificado {self.code} - {self.student.username} - {self.course.title}"
