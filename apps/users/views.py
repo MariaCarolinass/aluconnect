@@ -225,7 +225,7 @@ class LogoutView(generics.GenericAPIView):
         "Rotas de autenticação social são fornecidas por `social_django`.\n\n"
         "Exemplo:\n"
         "- `/auth/social/login/google-oauth2/`\n"
-        "Essa rotas seguem o fluxo OAuth2 padrão."
+        "Essa rota seguem o fluxo OAuth2 padrão."
     ),
     tags=["authentication"]
 )
@@ -236,4 +236,53 @@ class SocialAuthInfoView(generics.GenericAPIView):
     def get(self, request):
         return Response({
             "message": "Rotas de autenticação social disponíveis em /auth/social/"
+        })
+
+
+@extend_schema(
+    summary="Callback de autenticação social (JWT)",
+    description=(
+        "Endpoint chamado após a autenticação bem-sucedida via login social "
+        "(ex: Google). Recebe tokens JWT gerados pelo backend e retorna "
+        "os valores `access` e `refresh` para uso no frontend."
+    ),
+    tags=["authentication"],
+    responses={
+        200: OpenApiResponse(
+            description="Tokens JWT retornados com sucesso.",
+            examples=[
+                OpenApiExample(
+                    "Exemplo de sucesso",
+                    value={
+                        "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                        "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                    }
+                )
+            ]
+        ),
+        400: OpenApiResponse(
+            description="Erro na autenticação social.",
+            examples=[
+                OpenApiExample(
+                    "Exemplo de erro",
+                    value={"detail": "Autenticação social falhou."}
+                )
+            ]
+        ),
+    },
+)
+class SocialJWTCallbackView(generics.GenericAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = EmptySerializer
+    
+    def get(self, request, *args, **kwargs):
+        access = request.query_params.get("access")
+        refresh = request.query_params.get("refresh")
+
+        if not access or not refresh:
+            return Response({"detail": "Autenticação social falhou."}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            "access": access,
+            "refresh": refresh
         })
