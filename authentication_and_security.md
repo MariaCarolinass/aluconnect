@@ -13,7 +13,7 @@ Durante a análise do problema e o design da solução **AluConnect**, algumas h
 3. **Blacklist de tokens** é essencial para garantir que o logout e bloqueio de contas tenham efeito imediato.  
    - *Justificativa:* mesmo tokens ainda válidos podem ser inutilizados quando colocados na lista negra.
 
-4. **Flag `is_block` para usuários (Student, Instructor)** foi adicionada para suspender temporariamente acessos sem excluir a conta.  
+4. **Flag `is_block` para usuários (Student)** foi adicionada para suspender temporariamente acessos sem excluir a conta.  
    - *Justificativa:* promove flexibilidade administrativa e mantém a integridade dos dados históricos.
 
 5. **Diferenciação de papéis e permissões** usuários devem ter diferentes níveis de acesso conforme o papel desempenhado (estudante, instrutor ou administrador).
