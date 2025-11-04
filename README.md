@@ -1,6 +1,6 @@
 # AluConnect
 
-AluConnect é uma plataforma educacional desenvolvida com Django REST Framework, PostgreSQL e autenticação via JWT e OAuth2. Ela conecta alunos, instrutores e cursos em um ambiente seguro e escalável, com suporte a progresso de aprendizado, emissão de certificados e integração com login social.
+AluConnect é uma plataforma educacional desenvolvida com Django REST Framework, PostgreSQL e autenticação via JWT e OAuth2. Ela conecta estudantes, instrutores e cursos em um ambiente seguro e escalável, com suporte a progresso de aprendizado, emissão de certificados e integração com login social.
 
 ```
 AluConnect
@@ -89,16 +89,38 @@ AluConnect
 └── README.md
 ```
 
----
+## Visão Geral da Arquitetura
+
+A arquitetura do projeto foi desenhada com foco em modularidade, escalabilidade e segurança, utilizando o framework Django REST Framework para a API principal e o PostgreSQL como banco de dados relacional.  
+
+O sistema segue o padrão clean architecture / camadas de domínio, separando responsabilidades entre autenticação, lógica de negócios e persistência de dados.  
+
+Além disso, utiliza Redis para cache e filas assíncronas (quando necessário), e Docker Compose para orquestração local e implantação em produção.
+
+### Estrutura Geral
+
+![Estrutura do projeto](staticfiles/docs/architecture.svg)
+
+#### Fluxo de Requisições
+
+1. O cliente (frontend ou mobile) envia uma requisição HTTP (ex: login, registro, criação de certificado).
+2. A API Django recebe e valida a requisição.
+3. O serializer processa os dados e acessa as models.
+4. A lógica de negócio executa e interage com o PostgreSQL.
+5. O Redis armazena dados temporários (tokens, sessões, cache).
+6. A resposta JSON é retornada ao cliente.
+
+#### Estrutura de Modelagem
+
+![Estrutura de modelos do projeto](staticfiles/docs/architecture_models.png)
 
 ## Funcionalidades
 
 - Cadastro e autenticação de usuários com JWT e Google OAuth2
-- Gestão de cursos e aulas com CRUD completo
-- Matrícula de alunos e associação com instrutores
-- Registro de progresso por aula e por curso
+- Gestão de cursos e aulas entre estudantes e instrutores
+- Registro de progresso por aula de estudantes
 - Emissão de certificados ao concluir cursos
-- Sistema de permissões por papel (aluno, instrutor, admin)
+- Sistema de permissões por papel (estudante, instrutor, admin)
 - Logout com blacklist de tokens
 - Integração com Celery e Redis para tarefas assíncronas
 - Geração automática de certificados personalizados usando modelo de linguagem (LLM), com base no nome do aluno, curso concluído e data de finalização
@@ -315,6 +337,21 @@ pytest --cov=apps
 - Uso de Celery para tarefas como envio de certificados
 - Autenticação social com Google para facilitar onboarding
 
+### Segurança
+
+- Autenticação com JWT (JSON Web Tokens) via rest_framework_simplejwt
+- Controle de acesso com permissões personalizadas (ex: IsInstructor, IsAdmin)
+- Proteção contra CSRF e SQL Injection nativas do Django
+- Logs e auditoria de acessos configuráveis via DRF + Django Admin
+
+### Escalabilidade
+
+O sistema foi projetado para ser facilmente escalável:
+
+- Separação entre API, banco, cache e worker;
+- Uso de containers independentes;
+- Suporte a deploy em Render, AWS ECS ou Railway.
+
 ### LLM - Geração Inteligente de Certificados
 
 - Implementação de modelos de linguagem (LLM) para gerar certificados personalizados, substituindo textos fixos por mensagens criativas, inspiradoras e contextuais.  
@@ -328,37 +365,10 @@ pytest --cov=apps
 
 #### Arquitetura da Geração de Certificados com LLM
 
-```text
-┌──────────────────────────┐
-│        Usuário           │
-│  (Aluno conclui curso)   │
-└────────────┬─────────────┘
-             │
-             ▼
-┌──────────────────────────┐
-│     Django Backend       │
-│ Valida conclusão e envia │
-│   task ao Celery Worker  │
-└────────────┬─────────────┘
-             │
-             ▼
-┌──────────────────────────┐
-│     Celery + Redis       │
-│ Executa task assíncrona  │
-│ Requisição ao OpenRouter │
-└────────────┬─────────────┘
-             │
-             ▼
-┌──────────────────────────┐
-│     OpenRouter API       │
-│ Modelo: mistralai/mistral│
-│ Gera texto do certificado│
-└────────────┬─────────────┘
-             │
-             ▼
-┌──────────────────────────┐
-│     Banco de Dados       │
-│ Salva certificado com    │
-│ texto + código único     │
-└──────────────────────────┘
+```mermaid
+flowchart LR
+    A[Usuário: conclui curso] --> B[Django Backend: valida progresso e envia task]
+    B --> C[Celery + Redis: executa task assíncrona]
+    C --> D[OpenRouter API: gera texto do certificado]
+    D --> E[Banco de Dados: salva certificado com código único]
 ```
