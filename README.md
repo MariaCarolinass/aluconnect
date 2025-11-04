@@ -13,7 +13,8 @@ AluConnect
 │   │   ├── serializers.py
 │   │   ├── tasks.py
 │   │   ├── urls.py
-│   │   └── views.py
+│   │   ├── views.py
+│   │   └── tests/
 │   ├── courses
 │   │   ├── admin.py
 │   │   ├── apps.py
@@ -110,7 +111,7 @@ Além disso, utiliza Redis para cache e filas assíncronas (quando necessário),
 5. O Redis armazena dados temporários (tokens, sessões, cache).
 6. A resposta JSON é retornada ao cliente.
 
-#### Estrutura de Modelagem
+### Estrutura de Modelagem
 
 ![Estrutura de modelos do projeto](staticfiles/docs/architecture_models.png)
 
@@ -125,8 +126,6 @@ Além disso, utiliza Redis para cache e filas assíncronas (quando necessário),
 - Integração com Celery e Redis para tarefas assíncronas
 - Geração automática de certificados personalizados usando modelo de linguagem (LLM), com base no nome do aluno, curso concluído e data de finalização
 
----
-
 ## Tecnologias utilizadas
 
 - Django 5.2 + Django REST Framework
@@ -137,8 +136,6 @@ Além disso, utiliza Redis para cache e filas assíncronas (quando necessário),
 - Google OAuth2 (social-auth-app-django)
 - Gunicorn
 - Python 3.10
-
----
 
 ## Como executar o projeto
 
