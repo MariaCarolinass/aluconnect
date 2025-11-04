@@ -125,8 +125,6 @@ Além disso, utiliza Redis para cache e filas assíncronas (quando necessário),
 - Integração com Celery e Redis para tarefas assíncronas
 - Geração automática de certificados personalizados usando modelo de linguagem (LLM), com base no nome do aluno, curso concluído e data de finalização
 
----
-
 ## Tecnologias utilizadas
 
 - Django 5.2 + Django REST Framework
@@ -137,8 +135,6 @@ Além disso, utiliza Redis para cache e filas assíncronas (quando necessário),
 - Google OAuth2 (social-auth-app-django)
 - Gunicorn
 - Python 3.10
-
----
 
 ## Como executar o projeto
 
