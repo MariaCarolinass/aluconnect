@@ -339,8 +339,6 @@ pytest --cov=apps
 
 - Autenticação com JWT (JSON Web Tokens) via rest_framework_simplejwt
 - Controle de acesso com permissões personalizadas (ex: IsInstructor, IsAdmin)
-- Proteção contra CSRF e SQL Injection nativas do Django
-- Logs e auditoria de acessos configuráveis via DRF + Django Admin
 
 ### Escalabilidade
 
