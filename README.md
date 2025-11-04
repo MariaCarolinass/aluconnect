@@ -364,9 +364,26 @@ O sistema foi projetado para ser facilmente escalável:
 #### Arquitetura da Geração de Certificados com LLM
 
 ```mermaid
-flowchart LR
-    A[Usuário: conclui curso] --> B[Django Backend: valida progresso e envia task]
-    B --> C[Celery + Redis: executa task assíncrona]
-    C --> D[OpenRouter API: gera texto do certificado]
-    D --> E[Banco de Dados: salva certificado com código único]
+sequenceDiagram
+    participant User as Aluno
+    participant API as Django REST API
+    participant Broker as Redis (Fila)
+    participant Worker as Celery Worker
+    participant LLM as Modelo LLM (OpenRouter API)
+    participant DB as Banco de Dados
+
+    User->>API: Conclui curso / Solicita certificado
+    API->>Broker: generate_certificate.delay(student_id, course_id)
+    Note over API: Resposta imediata ao usuário
+
+    Broker->>Worker: Envia tarefa para execução
+    Worker->>DB: Verifica se certificado já existe
+    alt Certificado já existe
+        Worker-->>API: Retorna aviso (sem duplicar)
+    else Criar certificado
+        Worker->>LLM: Envia prompt com dados do aluno/curso
+        LLM-->>Worker: Retorna texto personalizado
+        Worker->>DB: Salva certificado com código único
+        Worker->>DB: (Opcional) Gera PDF e/ou registra envio
+    end
 ```
