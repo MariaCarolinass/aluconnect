@@ -78,7 +78,7 @@ AluConnect
 │   ├── utils.py
 │   ├── views.py
 │   └── wsgi.py
-├── data
+├── data/
 ├── staticfiles/
 ├── manage.py
 ├── rundata.py
