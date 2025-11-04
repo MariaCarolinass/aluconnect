@@ -110,7 +110,7 @@ Além disso, utiliza Redis para cache e filas assíncronas (quando necessário),
 5. O Redis armazena dados temporários (tokens, sessões, cache).
 6. A resposta JSON é retornada ao cliente.
 
-#### Estrutura de Modelagem
+### Estrutura de Modelagem
 
 ![Estrutura de modelos do projeto](staticfiles/docs/architecture_models.png)
 
