@@ -2,6 +2,8 @@
 
 AluConnect é uma plataforma educacional desenvolvida com Django REST Framework, PostgreSQL e autenticação via JWT e OAuth2. Ela conecta estudantes, instrutores e cursos em um ambiente seguro e escalável, com suporte a progresso de aprendizado, emissão de certificados e integração com login social.
 
+## Estrutura de Pastas
+
 ```
 AluConnect
 ├── apps
