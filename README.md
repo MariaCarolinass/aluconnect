@@ -152,29 +152,10 @@ cd aluconnect
 ### Crie o arquivo .env
 
 ```bash
-SECRET_KEY=your-secret-key
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1
-
-JWT_ACCESS_LIFETIME=5
-JWT_REFRESH_LIFETIME=30
-
-GOOGLE_CLIENT_ID=key.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-
-DB_ENGINE=django.db.backends.postgresql
-DB_NAME=aluconnect_db
-DB_USER=aluconnect_carol
-DB_PASSWORD=1234
-DB_HOST=db
-DB_PORT=5432
-
-OPENROUTER_API_KEY=your-openrouter-api-key
-
-CELERY_BROKER_URL=redis://redis:6379/0
+cp .env.example .env
 ```
 
-Caso queira utilizar SQLite ao invés de PostgreSQL, comente as variáveis relacionadas ao banco de dados PostgreSQL e adicione as linhas abaixo:
+Por padrão o .env usa o PostgreSQL, caso queira utilizar SQLite, comente as variáveis relacionadas ao banco de dados PostgreSQL e descomente as linhas abaixo:
 
 ```bash
 DB_ENGINE=django.db.backends.sqlite3
