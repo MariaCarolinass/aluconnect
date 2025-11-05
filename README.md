@@ -168,7 +168,7 @@ DB_PORT=
 
 O SQLite facilita a execução local sem a necessidade de configurar um banco de dados separado e é útil para testes rápidos ou desenvolvimento inicial sem o Docker.
 
-### Execução e Importação de Dados com o Docker
+### Rodando e importando dados dentro do Docker
 
 1. Aplicar migrações
 
@@ -204,7 +204,7 @@ docker-compose run --rm web python rundata.py
 http://localhost:8000/
 ```
 
-### Execute localmente (fora do Docker)
+### Rodando e importando dados localmente (fora do Docker)
 
 1. Crie o ambiente virtual venv:
 
@@ -243,16 +243,16 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+#### Importando dados para o banco local
+
+```bash
+python rundata.py
+```
+
 #### Acesse no navegador
 
 ```bash
 http://127.0.0.1:8000/
-```
-
-#### Importar dados localmente
-
-```bash
-python rundata.py
 ```
 
 ## Documentação da API com Swagger
